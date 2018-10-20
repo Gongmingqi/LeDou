@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 命名空间
+一般建议使用包名+类名 -->
+<mapper namespace="com.wangbo.joybeans.mapper.UserMapper">
+	<resultMap type="User" id="UserMap">
+		<id property="id" column="id"/>
+		<result property="username" column="name"/>
+		<result property="password" column="pwd"/>
+	</resultMap>
+
+	<select id="login" parameterType="map" resultType="User">
+		select * from user_gmq where account = #{account} and password = #{pwd}
+	</select>
+	
+	<select id="queryAll" resultType="User">
+		select * from user_gmq
+	</select>
+	
+	<select id="queryConditionUserPagination" parameterType="map" resultType="User">
+		
+		
+		select t.* from (select user_gmq.*,rownum as rn from user_gmq
+		<where>
+			<choose>
+				<when test="searchUserAccount != '' ">
+					and account like '%${searchUserAccount}%'
+				</when>
+			</choose>
+			
+			<choose>
+				<when test="searchUserName != '' ">
+					and name like '%${searchUserName}%'
+				</when>
+			</choose>
+			
+			<choose>
+				<when test="searchUserPhone != '' ">
+					and phonenumber like '%${searchUserPhone}%'
+				</when>
+			</choose>
+		</where>
+		
+		)t
+		<![CDATA[
+		where t.rn >= #{start} 
+		and t.rn <= #{end}
+		]]>
+	</select>
+	
+	<select id="queryConditionUser" parameterType="map" resultType="User">
+		
+		
+		select *  from user_gmq
+		<where>
+			<choose>
+				<when test="searchUserAccount != '' ">
+					and account like '%${searchUserAccount}%'
+				</when>
+			</choose>
+			
+			<choose>
+				<when test="searchUserName != '' ">
+					and name like '%${searchUserName}%'
+				</when>
+			</choose>
+			
+			<choose>
+				<when test="searchUserPhone != '' ">
+					and phonenumber like '%${searchUserPhone}%'
+				</when>
+			</choose>
+		</where>
+		
+		
+		
+	</select>
+	
+	<update id="recoverUser" parameterType="map">
+		begin
+		<foreach collection="array" separator=";" item="item">
+			update user_gmq 
+			set userstate = '0'
+			where id = ${item}
+		</foreach>
+		;end;
+	</update>
+	
+	<update id="pauseUser" parameterType="map">
+		begin
+		<foreach collection="array" separator=";" item="item">
+			update user_gmq 
+			set userstate = '1'
+			where id = ${item}
+		</foreach>
+		;end;
+	</update>
+	
+	<select id="userPagination" parameterType="map" resultType="User">
+		<![CDATA[
+		select t.* from (select user_gmq.*,rownum as rn from user_gmq)t 
+		where t.rn >= #{start} 
+		and t.rn <= #{end}
+		]]>
+	</select>
+	
+	<insert id="regist" parameterType="User">
+		insert into user_gmq(id,account,province_id,name,phonenumber,userstate,createtime,
+		usertype,call_balance,bean_balance,password)
+		values(seq_user_gmq.nextval,#{account},11,#{name},#{phonenumber},'0',sysdate,'1',100,0,#{password})
+	</insert>
+	
+	<select id="queryUserById" parameterType="int" resultType="User">
+		select * from user_gmq where id = #{userId}
+	</select>
+	
+	<update id="consumeMoney" parameterType="map">
+		update user_gmq set call_balance = #{callBalance},bean_balance = #{beanBalance} where id = #{userId}
+	</update>
+
+</mapper>

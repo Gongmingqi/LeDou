@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 命名空间
+一般建议使用包名+类名 -->
+<mapper namespace="com.wangbo.joybeans.mapper.ExchangeRateMapper">
+	<select id="queryAll"  resultType="ExchangeRate">
+		select * from exchange_rate_gmq order by id desc
+	</select>
+	
+	<select id="queryConditionRate" parameterType="map" resultType="ExchangeRate">
+		select * from exchange_rate_gmq
+		<where>
+			<choose>
+				<when test="searchExchangeProvId != '' and searchExchangeProvId != null ">
+					and id = #{searchExchangeProvId}
+				</when>
+			</choose>
+		</where>
+	</select>
+	
+	<update id="updateExchangeRate" parameterType="map">
+		update exchange_rate_gmq set cost_rate = #{cost_rate},updatetime=sysdate
+		where id = #{id}
+	</update>
+	
+	<select id="queryExchangeRateById" parameterType="int" resultType="ExchangeRate">
+		select * from exchange_rate_gmq where id = #{id}
+	</select>
+	
+	<insert id="addExchangeRate" parameterType="ExchangeRate">
+		insert into exchange_rate_gmq(id,province,cost_rate,createtime,updatetime)
+		values(seq_exchange_rate_gmq.nextval,#{province},#{cost_rate},sysdate,sysdate)
+	</insert>
+	
+	<delete id="deleteRate">
+		delete from exchange_rate_gmq where id in
+		<foreach collection="array" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	
+	
+	
+	
+</mapper>

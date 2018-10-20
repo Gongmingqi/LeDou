@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 命名空间
+一般建议使用包名+类名 -->
+<mapper namespace="com.wangbo.joybeans.mapper.BuyingRecordMapper">
+	<select id="queryAll"  resultType="BuyingRecord" parameterType="int">
+		select * from buying_record_gmq where user_id = #{userId}
+	</select>
+	
+	<select id="userDownGameQuery" parameterType="map" resultType="BuyingRecord">
+		<![CDATA[
+		select * from buying_record_gmq where buyingtime+interval '1' DAY > sysdate and downloadtimes <=3 and user_id = #{userId} and game_name = #{gameName}		
+		]]>
+	</select>
+	
+	<update id="downloadWithoutMoney" parameterType="map">
+		<![CDATA[
+		update buying_record_gmq set downloadtimes=downloadtimes+1 where buyingtime+interval '1' DAY > sysdate and downloadtimes <=3 and user_id = #{userId} and game_name = #{gameName}
+		]]>
+	</update>
+	
+	<insert id="addBuyingRecord" parameterType="map">
+		insert into buying_record_gmq(id,game_name,cost_price,buying_way,present_bean_num,buyingtime,user_id,downloadtimes)
+		values(seq_buying_record_gmq.nextval,#{gameName},#{costPrice},#{buyingWay},#{presentBeanNum},sysdate,#{userId},1)
+	</insert>
+	
+	
+	
+	
+</mapper>

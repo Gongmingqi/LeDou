@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 命名空间
+一般建议使用包名+类名 -->
+<mapper namespace="com.wangbo.joybeans.mapper.GameMapper">
+	
+	<select id="queryGameByGameTypeId" parameterType="int" resultType="Game">
+		select * from game_gmq where gametype_id = #{gametype_id}
+	</select>
+	
+	<select id="queryAll" resultType="Game">
+		select * from game_gmq
+	</select>
+	
+	<insert id="addGame" parameterType="Game">
+		insert into game_gmq(id,game_name,gametype_id,gamepic_address,
+		game_state,game_bean_price,game_call_price,createtime,
+		updatetime,game_intro)
+		values(seq_game_gmq.nextval,#{game_name},#{gametype_id},#{gamepic_address},
+		#{game_state},#{game_bean_price},#{game_call_price},sysdate,sysdate,#{game_intro})
+	</insert>
+	
+	<select id="queryConditionGame" parameterType="map" resultType="Game">
+		select * from game_gmq
+		<where>
+			<choose>
+				<when test="searchGameName != '' ">
+					and game_name like '%${searchGameName}%'
+				</when>
+			</choose>
+			
+			<choose>
+				<when test="searchGameType != '' and searchGameType != null ">
+					and gametype_id = #{searchGameType}
+				</when>
+			</choose>
+		</where>
+	</select>
+	
+	<select id="queryGameById" parameterType="int" resultType="Game">
+		select * from game_gmq where id = #{id}
+	</select>
+	
+	<update id="updateGame" parameterType="Game">
+		update game_gmq set game_name = #{game_name},gametype_id = #{gametype_id},
+		gamepic_address = #{gamepic_address},game_state = #{game_state},
+		game_bean_price = #{game_bean_price},game_call_price = #{game_call_price},
+		updatetime = sysdate,game_intro = #{game_intro} where id = #{id}
+	</update>
+	
+	
+</mapper>

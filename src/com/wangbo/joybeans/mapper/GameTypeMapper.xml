@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 命名空间
+一般建议使用包名+类名 -->
+<mapper namespace="com.wangbo.joybeans.mapper.GameTypeMapper">
+	<select id="queryAll"  resultType="GameType">
+		select * from gametype_gmq order by id desc
+	</select>
+	
+	<insert id="addGameType" parameterType="GameType">
+		insert into gametype_gmq(id,gametype,type_state,createtime,updatetime)
+		values(seq_gametype_gmq.nextval,#{gametype},#{type_state},sysdate,sysdate)
+	</insert>
+	
+	<select id="queryGameTypeById" parameterType="int" resultType="GameType">
+		select * from gametype_gmq where id = #{id}
+	</select>
+	
+	<update id="updateGameType" parameterType="map">
+		update gametype_gmq set gametype = #{gameType},type_state = #{gameTypeState},updatetime=sysdate where id = #{id}
+	</update>
+	
+	<select id="queryConditionGameType" parameterType="map" resultType="GameType">
+		select * from gametype_gmq
+		<where>
+			<choose>
+				<when test="searchGameTypeName != '' ">
+					and gametype like '%${searchGameTypeName}%'
+				</when>
+			</choose>
+			
+			<choose>
+				<when test="searchGameTypeState != '' ">
+					and type_state like '%${searchGameTypeState}%'
+				</when>
+			</choose>
+		</where>
+	</select>
+	
+	
+	
+</mapper>
